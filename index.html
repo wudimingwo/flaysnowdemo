@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewprot" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>dddd</title>
+    <link rel="stylesheet" type="text/css" href="css/test.css" />
+    <style type="text/css">
+      canvas{
+        margin: 100px 200px;
+        border: 1px solid black;
+        background-color: #000;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <canvas id="myCanvas" width="500" height="500"></canvas>
+    
+    <button onclick="stop()">stop</button>
+    <button onclick="move()">start</button>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script>
+      
+      
+      // 一条路径 
+        // 落笔
+        
+        // 绘制雪花
+        // 清空画布, 来更新
+        // 如何移动位置?
+        // 如何进行旋转?
+        
+        // 雪花的基本参数, 中心坐标, 长度, 角度
+        // 画布
+        var myCanvas = document.getElementById("myCanvas");
+        var ctx = myCanvas.getContext("2d");
+        
+        // 一个雪花的创建.
+        var createsnow = (function () {
+        return  function (x,y,deg,r) {
+          
+          ctx.moveTo(x,y);
+          // 六个边 怎么画比较好?
+          // 需要一点数学知识.
+          // 需要根据 角度和长度把 坐标求出来.
+          
+          // 读数和弧度单位换算.
+          // 360 = 2 * Math.PI
+          // x / 360 = y / 2 / Math.Pi
+          // 已知 x 求 y
+          // y = x/180 * Math.Pi
+          // 我这说的也挺费劲的...
+          
+          var ddd = deg/180 * Math.PI;
+          var x1 = x + Math.cos(ddd) * r;
+          var y1 = y + Math.sin(ddd) * r;
+          var x2 = x - Math.cos(ddd) * r;
+          var y2 = y - Math.sin(ddd) * r;
+          var x3 = x + Math.cos(ddd + (Math.PI/3)) * r;
+          var y3 = y + Math.sin(ddd + (Math.PI/3)) * r;
+          var x4 = x - Math.cos(ddd + (Math.PI/3)) * r;
+          var y4 = y - Math.sin(ddd + (Math.PI/3)) * r;
+          var x5 = x + Math.cos(ddd - (Math.PI/3)) * r;
+          var y5 = y + Math.sin(ddd - (Math.PI/3)) * r;
+          var x6 = x - Math.cos(ddd - (Math.PI/3)) * r;
+          var y6 = y - Math.sin(ddd - (Math.PI/3)) * r;
+          
+          // 根据 坐标 画出线条.
+          ctx.beginPath();
+          ctx.moveTo(x,y);
+          ctx.lineTo(x1,y1);
+          ctx.lineTo(x2,y2);
+          ctx.closePath();
+          ctx.lineTo(x3,y3);
+          ctx.lineTo(x4,y4);
+          ctx.closePath();
+          ctx.lineTo(x5,y5);
+          ctx.lineTo(x6,y6);
+          ctx.closePath();
+          ctx.lineWidth = 5;
+          ctx.strokeStyle = "white";
+          ctx.stroke();
+          
+        }
+        })();
+        
+        // 让一个雪花完整的动画
+//      createsnow(100,100,30,30);
+        
+        function SnowData () {
+          this.init = function () {
+            this.x =Math.random() * 500;
+            this.y = 0;
+            this.r = Math.random() * 15 + 5;
+            this.deg = parseInt(Math.random() * 360);
+            this.speedx = Math.random() > 0.5 ? Math.random() * 5 + 2 : - Math.random() * 5 + 2; 
+            this.speedy = Math.random() * 5 + 2;
+          }
+          this.render = function () {
+            this.x += this.speedx;
+            this.y += this.speedy;
+            this.deg++;
+            createsnow(this.x,this.y,this.deg,this.r);
+            if (this.x < -this.r || this.x > 500+this.r || this.y > 500 + this.r) {
+              this.init();
+            }
+          }
+          this.init();
+          createsnow(this.x,this.y,this.deg,this.r);
+        }
+        
+        
+        function move () {
+          // 创建多个雪花
+          // 使用for循环.
+          
+          // 清空之后,
+          // 必须让他们各自按照自己的数据进行更新.
+          // 所以最好是用面向对象的方式?
+          
+          // 创建50个雪花
+          if (!move.flag) {
+            
+          var snowArr = [];
+          
+          for(var i = 0; i < 50; i++) {
+            snowArr.push(new SnowData());
+          }
+          
+          
+            move.timer = setInterval(function () {
+                ctx.clearRect(0,0,500,500);
+                snowArr.forEach(function (item) {
+                    item.render();
+                });
+            },50);
+            move.flag = true;
+          }
+        }
+        move();
+        
+        function stop () {
+            clearInterval(move.timer);
+                ctx.clearRect(0,0,500,500);
+                move.flag = false;
+        }
+    </script>
+  </body>
+
+</html>
